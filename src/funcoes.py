@@ -1,11 +1,18 @@
 import math
 
-def sphere(vetor):
-    return sum(valor**2 for valor in vetor)
+# Three-Hump Camel Back (CB3 - Dimensão 2)
+def camel_back_3d(vetor):
+    x, y = vetor
 
-def rastrigin(vetor):
-    tamanho = len(vetor)
-    return 10 * tamanho + sum(
-        valor**2 - 10 * math.cos(2 * math.pi * valor)
-        for valor in vetor
-    )
+    termo1 = 2 * x**2
+    termo2 = -1.05 * x**4
+    termo3 = (x**6) / 6
+    termo4 = x * y
+    termo5 = y**2
+
+    return termo1 + termo2 + termo3 + termo4 + termo5
+
+
+# Alpine Function (AP)
+def alpine(vetor):
+    return sum(abs(x * math.sin(x) + 0.1 * x) for x in vetor)
