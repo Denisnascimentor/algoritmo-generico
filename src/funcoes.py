@@ -1,6 +1,6 @@
 import math
 
-# Three-Hump Camel Back (CB3 - Dimensão 2)
+
 def camel_back_3d(vetor):
     x, y = vetor
 
@@ -13,6 +13,7 @@ def camel_back_3d(vetor):
     return termo1 + termo2 + termo3 + termo4 + termo5
 
 
-# Alpine Function (AP)
+
 def alpine(vetor):
     return sum(abs(x * math.sin(x) + 0.1 * x) for x in vetor)
+    

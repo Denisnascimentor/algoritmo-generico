@@ -1,107 +1,85 @@
-# Algoritmo Genético (Genetic Algorithm) — Otimização de Funções
+# Algoritmo Genético (Python)
 
-Este projeto implementa um **Algoritmo Genético (AG)** simples para **minimização** de funções matemáticas contínuas, com suporte a duas funções de teste clássicas:
-
-- **Sphere**
-- **Rastrigin**
-
-A execução é feita via um menu interativo no terminal, onde você escolhe a função e define parâmetros como dimensão, limite, número de gerações e tamanho da população.
-
----
+Projeto em Python que implementa um **Algoritmo Genético (AG)** para **minimização** de funções de teste. O programa permite escolher uma função objetivo via menu e executar múltiplas rodadas, exibindo **NFE médio** (número de avaliações da função) e **taxa de sucesso**.
 
 ## Estrutura do projeto
 
-- `src/main.py`  
-  Interface de execução (menu) e rotina para rodar várias execuções e calcular métricas.
+A organização (conforme o projeto está hoje) é:
 
-- `src/algoritmo.py`  
-  Implementação do algoritmo genético (`algoritmo_genetico`).
+```
+.
+└── src
+    ├── algoritmo.py
+    ├── funcoes.py
+    └── main.py
+```
 
-- `src/funcoes.py`  
-  Funções objetivo (Sphere e Rastrigin).
+## O que o projeto faz
 
----
+- Gera uma **população inicial** de indivíduos (vetores reais) com valores aleatórios no intervalo `[-limite, limite]`.
+- Avalia a aptidão (**fitness**) de cada indivíduo usando a **função objetivo** escolhida.
+- Executa por um número de **gerações**, criando uma nova população com:
+  - **Seleção por torneio (k = 3)**: escolhe o melhor entre 3 indivíduos aleatórios (duas vezes) para formar 2 pais.
+  - **Crossover aritmético**: combina os pais com um fator `beta` aleatório.
+  - **Mutação gaussiana**: aplica ruído gaussiano `N(0,1) * 0.1` a cada gene.
+- Ao final, retorna o melhor indivíduo encontrado e contabiliza o **total de avaliações da função (NFE)**.
 
-## Como o algoritmo funciona (resumo)
+## Arquivos
 
-O AG implementado segue esta lógica:
+### `src/algoritmo.py`
+Contém a função principal do AG:
 
-1. **Inicializa uma população** de vetores reais (valores aleatórios em `[-limite, limite]`).
-2. Para cada geração:
-   - Faz **seleção por torneio** (3 candidatos) para escolher dois pais (`pai1` e `pai2`).
-   - Gera um filho por **recombinação convexa** (blend) entre os pais:
-     - `filho = fator * pai1 + (1 - fator) * pai2`
-   - Aplica **mutação gaussiana** em cada gene:
-     - `gene = gene + N(0,1) * 0.1`
-3. Ao final, retorna o **melhor indivíduo** encontrado, seu valor na função, e o total de avaliações (NFE).
+- `algoritmo_genetico(funcao, dimensao=3, limite=5, geracoes=100, tamanho_pop=50)`
+  - Retorna: `(melhor_cromossomo, melhor_fitness, total_nfe)`
 
----
+### `src/funcoes.py`
+Funções objetivo disponíveis:
 
-## Requisitos
+- `camel_back_3d(vetor)`  
+  Função Camel Back (na prática, esta implementação usa **2 variáveis**: `x` e `y`).
 
-- Python 3.x
+- `alpine(vetor)`  
+  Função Alpine (soma para todas as dimensões do vetor).
 
-Bibliotecas usadas são apenas da biblioteca padrão (`random` e `math`).
-
----
+### `src/main.py`
+Interface via terminal:
+- Menu para escolher a função (Camel Back 3D ou Alpine)
+- Coleta de parâmetros (execuções, dimensão, limite, gerações, tamanho da população)
+- Imprime:
+  - **NFE médio**
+  - **Taxa de sucesso** (conta sucesso quando `abs(melhor_valor) < 0.01`)
 
 ## Como executar
 
-Entre na pasta `src` e rode o programa:
+### Requisitos
+- Python 3.8+ (recomendado)
+
+### Rodando o programa
+Na raiz do projeto:
 
 ```bash
-cd src
-python main.py
+python src/main.py
 ```
 
-Você verá um menu como:
+Siga o menu no terminal e informe os parâmetros solicitados.
 
-- `1 - Sphere`
-- `2 - Rastrigin`
+## Parâmetros (o que significam)
 
-E será solicitado:
+- **execuções**: quantas vezes o AG roda do zero (para estimar taxa de sucesso e NFE médio).
+- **dimensão**: número de variáveis do problema (tamanho do vetor).
+- **limite**: valores iniciais (e faixa esperada) em `[-limite, limite]`.
+- **gerações**: quantidade de iterações evolutivas.
+- **tamanho da população**: número de indivíduos em cada geração.
 
-- **Número de execuções**
-- **Dimensão do problema**
-- **Limite dos valores** (intervalo `[-limite, limite]`)
-- **Número de gerações**
-- **Tamanho da população**
+## Saída esperada (exemplo)
 
----
+O programa exibirá algo como:
 
-## Saídas / Métricas
+- Função escolhida
+- NFE médio
+- Taxa de sucesso (ex.: `7/10`)
 
-Para cada conjunto de execuções, o programa imprime:
+## Observações importantes
 
-- **NFE médio**: média do número de avaliações de função (no código, conta 1 avaliação por filho gerado).
-- **Taxa de sucesso**: número de execuções em que `|melhor_valor| < 0.01`.
-
-Exemplo de saída:
-
-```
-Função: Sphere
-NFE médio: 5000.0
-Taxa de sucesso: 8/10
-```
-
----
-
-## Funções objetivo disponíveis
-
-### Sphere
-Minimização de:
-
-\[
-f(x) = \sum_{i=1}^{n} x_i^2
-\]
-
-Ótimo global: `f(x)=0` em `x = (0,0,...,0)`.
-
-### Rastrigin
-Minimização de:
-
-\[
-f(x) = 10n + \sum_{i=1}^{n} (x_i^2 - 10\cos(2\pi x_i))
-\]
-
-Ótimo global: `f(x)=0` em `x = (0,0,...,0)`.
+- A função `camel_back_3d(vetor)` usa apenas **dois valores** (`x` e `y`).  
+  Portanto, ao escolhê-la, use **dimensão = 2** para evitar erro de desempacotamento (`x, y = vetor`).
